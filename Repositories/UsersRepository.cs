@@ -22,7 +22,6 @@ namespace UsersRestApi.Repositories
                     FirstName = "Tanyo",
                     LastName = "Nikolov",
                     Role = "Owner",
-                    Username = "tanyo777"
                 },
             };
         }

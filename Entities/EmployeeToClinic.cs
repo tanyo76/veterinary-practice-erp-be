@@ -1,11 +1,10 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace UsersRestApi.Entities
 {
-    public class EmployeeToClinic
+    public class EmployeeToClinic : BaseEntity
     {
-        public int Id { get; set; }
-
         public int UserId { get; set; }
         public int ClinicId { get; set; }
 

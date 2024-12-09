@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using UsersRestApi.Entities;
 using UsersRestApi.Repositories;
+using UsersRestApi.Entities;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -29,13 +28,6 @@ namespace UsersRestApi.Controllers
                 return NotFound();
 
             return Ok(item);
-        }
-
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-            Console.WriteLine(value);
-
         }
 
         [HttpPut]

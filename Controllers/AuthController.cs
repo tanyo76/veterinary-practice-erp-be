@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using UsersRestApi.Entities;
@@ -10,25 +12,29 @@ using UsersRestApi.Repositories;
 
 public class MyModel
 {
-    public string username {get; set;}
-    public string password {get; set;}
+    public string email { get; set; }
+    public string password { get; set; }
 }
+
 
 
 namespace UsersRestApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TokenController : ControllerBase
+    public class AuthController : ControllerBase
     {
         [HttpPut]
         public IActionResult Put([FromBody] MyModel model)
         {
-            User loggedUser = UsersRepository.Items.Find(u => u.Username == model.username &&
+            User loggedUser = UsersRepository.Items.Find(u => u.Email == model.email &&
                                                               u.Password == model.password);
 
+
             if (loggedUser == null)
-                return Unauthorized();
+            {
+                return BadRequest(new { message = "Invalid credentials" });
+            }
 
             var claims = new[]
             {
@@ -48,9 +54,19 @@ namespace UsersRestApi.Controllers
 
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
             string jwt = tokenHandler.WriteToken(token);
-            Console.WriteLine(jwt);
 
             return Ok(new { success = true, token = jwt });
+        }
+
+        [HttpPost]
+        public IActionResult Post([FromBody] User userDto)
+        {
+            int usersCount = UsersRepository.Items.Count;
+
+            userDto.Id = usersCount + 1;
+            UsersRepository.Items.Add(userDto);
+
+            return Ok(userDto.Id);
         }
     }
 }
