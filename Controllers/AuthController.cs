@@ -27,7 +27,10 @@ namespace UsersRestApi.Controllers
         [HttpPut]
         public IActionResult Put([FromBody] MyModel model)
         {
-            User loggedUser = UsersRepository.Items.Find(u => u.Email == model.email &&
+
+            UsersRepository repo = new UsersRepository();
+
+            User loggedUser = repo.GetAll().Find(u => u.Email == model.email &&
                                                               u.Password == model.password);
 
 
@@ -61,10 +64,10 @@ namespace UsersRestApi.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] User userDto)
         {
-            int usersCount = UsersRepository.Items.Count;
 
-            userDto.Id = usersCount + 1;
-            UsersRepository.Items.Add(userDto);
+            UsersRepository repo = new UsersRepository();
+
+            repo.Add(userDto);
 
             return Ok(userDto.Id);
         }

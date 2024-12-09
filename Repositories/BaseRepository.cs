@@ -44,5 +44,12 @@ namespace UsersRestApi.Repositories
             Items.Remove(item);
             Context.SaveChanges();
         }
+
+        public void Add(T item)
+        {
+            Items.Add(item);
+            Context.SaveChanges();
+        }
+        
     }
 }

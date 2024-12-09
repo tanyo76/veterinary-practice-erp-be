@@ -16,13 +16,16 @@ namespace UsersRestApi.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok(UsersRepository.Items);
+            UsersRepository repo = new UsersRepository();
+
+            return Ok(repo.GetAll());
         }
 
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            User item = UsersRepository.Items.Find(u => u.Id == id);
+            UsersRepository repo = new UsersRepository();
+            User item = repo.GetAll().Find(u => u.Id == id);
 
             if (item == null)
                 return NotFound();
@@ -33,15 +36,17 @@ namespace UsersRestApi.Controllers
         [HttpPut]
         public IActionResult Put([FromBody] User model)
         {
+
+            UsersRepository repo = new UsersRepository();
             int id = 1;
-            foreach (User item in UsersRepository.Items)
+            foreach (User item in repo.GetAll())
             {
                 if (id <= item.Id)
                     id = item.Id + 1;
             }
 
             model.Id = id;
-            UsersRepository.Items.Add(model);
+            repo.Add(model);
 
             return Created(model.Id.ToString(), model);
         }
@@ -49,8 +54,10 @@ namespace UsersRestApi.Controllers
         [HttpDelete("{test}")]
         public IActionResult Delete(int test)
         {
+            UsersRepository repo = new UsersRepository();
+
             User user = null;
-            foreach (User item in UsersRepository.Items)
+            foreach (User item in repo.GetAll())
             {
                 if (test == item.Id)
                 {
@@ -61,7 +68,7 @@ namespace UsersRestApi.Controllers
 
             if (user != null)
             {
-                UsersRepository.Items.Remove(user);
+                repo.Delete(user);
                 return Ok(user);
             }
 
