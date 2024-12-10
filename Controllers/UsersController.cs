@@ -13,14 +13,6 @@ namespace UsersRestApi.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        [HttpGet]
-        public IActionResult Get()
-        {
-            UsersRepository repo = new UsersRepository();
-
-            return Ok(repo.GetAll());
-        }
-
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {

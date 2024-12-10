@@ -11,7 +11,7 @@ using UsersRestApi.Repositories;
 namespace UsersRestApi.Migrations
 {
     [DbContext(typeof(ProjectDBContext))]
-    [Migration("20241209190213_initial-migrations")]
+    [Migration("20241210141103_initial-migrations")]
     partial class initialmigrations
     {
         /// <inheritdoc />
@@ -36,10 +36,6 @@ namespace UsersRestApi.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

@@ -12,10 +12,8 @@ namespace UsersRestApi.Entities
         public string Address { get; set; }
 
         [Required]
-        public string FirstName { get; set; }
         public int OwnerId { get; set; }
 
-        [Required]
         [ForeignKey("OwnerId")]
         public virtual User Owner { get; set; }
     }

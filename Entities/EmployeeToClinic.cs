@@ -5,7 +5,10 @@ namespace UsersRestApi.Entities
 {
     public class EmployeeToClinic : BaseEntity
     {
+
+        [Required]
         public int UserId { get; set; }
+        [Required]
         public int ClinicId { get; set; }
 
         [ForeignKey("UserId")]

@@ -16,8 +16,6 @@ public class MyModel
     public string password { get; set; }
 }
 
-
-
 namespace UsersRestApi.Controllers
 {
     [Route("api/[controller]")]
@@ -29,14 +27,28 @@ namespace UsersRestApi.Controllers
         {
 
             UsersRepository repo = new UsersRepository();
+            ClinicsRepository clinicsRepo = new ClinicsRepository();
 
             User loggedUser = repo.GetAll().Find(u => u.Email == model.email &&
                                                               u.Password == model.password);
 
-
             if (loggedUser == null)
             {
                 return BadRequest(new { message = "Invalid credentials" });
+            }
+
+            int clinicId = 0;
+
+            if (loggedUser.Role == "Owner")
+            {
+                clinicId = clinicsRepo.GetAll().Find(c => c.OwnerId == loggedUser.Id).Id;
+            }
+
+            if (loggedUser.Role != "Owner")
+            {
+                EmployeeToClinicRepository empToClinic = new EmployeeToClinicRepository();
+                Console.WriteLine(loggedUser.Id);
+                clinicId = empToClinic.GetAll().Find(employeeToClinic => employeeToClinic.UserId == loggedUser.Id).ClinicId;
             }
 
             var claims = new[]
@@ -58,7 +70,7 @@ namespace UsersRestApi.Controllers
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
             string jwt = tokenHandler.WriteToken(token);
 
-            return Ok(new { success = true, token = jwt });
+            return Ok(new { success = true, token = jwt, clinic = clinicId });
         }
 
         [HttpPost]
@@ -67,9 +79,28 @@ namespace UsersRestApi.Controllers
 
             UsersRepository repo = new UsersRepository();
 
-            repo.Add(userDto);
+            int userId = repo.Add(userDto);
 
-            return Ok(userDto.Id);
+            var claims = new[]
+            {
+                new Claim("LoggedUserId", userId.ToString())
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("843y1rfhuewuiwqjsu9201jsaklsdnsafuieruig213b89"));
+            var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                "vetmasters",
+                "vetmasters.react.app",
+                claims,
+                expires: DateTime.UtcNow.AddDays(10),
+                signingCredentials: signingCredentials
+            );
+
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            string jwt = tokenHandler.WriteToken(token);
+
+            return Ok(new { userId, accessToken = jwt });
         }
     }
 }

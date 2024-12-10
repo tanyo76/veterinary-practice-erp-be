@@ -45,10 +45,12 @@ namespace UsersRestApi.Repositories
             Context.SaveChanges();
         }
 
-        public void Add(T item)
+        public int Add(T item)
         {
             Items.Add(item);
             Context.SaveChanges();
+
+            return item.Id;
         }
         
     }
