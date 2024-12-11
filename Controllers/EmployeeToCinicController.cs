@@ -24,5 +24,19 @@ namespace UsersRestApi.Controllers
 
             return Ok(new { employees = empsToClinic });
         }
+
+        [HttpDelete("{userId}/{clinicId}")]
+        public IActionResult Delete(int clinicId, int userId)
+        {
+
+            EmployeeToClinicRepository empRepo = new EmployeeToClinicRepository();
+
+            EmployeeToClinic empToClinicRecord = empRepo.GetAll()
+            .Find(emp => emp.ClinicId == clinicId && emp.UserId == userId);
+
+            empRepo.Delete(empToClinicRecord);
+
+            return Ok();
+        }
     }
 }
