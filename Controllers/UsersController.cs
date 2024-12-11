@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UsersRestApi.Repositories;
 using UsersRestApi.Entities;
+using System.Collections.Generic;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -13,16 +14,22 @@ namespace UsersRestApi.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        [HttpGet("{id}")]
+        [HttpGet]
         public IActionResult Get(int id)
         {
             UsersRepository repo = new UsersRepository();
-            User item = repo.GetAll().Find(u => u.Id == id);
+            List<User> items = repo.GetAll().FindAll(u => u.Role != "Owner");
 
-            if (item == null)
-                return NotFound();
+            return Ok(items);
+        }
 
-            return Ok(item);
+        [HttpPost]
+        public IActionResult Post([FromBody] User userDto)
+        {
+            UsersRepository repo = new UsersRepository();
+            int userId = repo.Add(userDto);
+
+            return Ok(new { userId });
         }
 
         [HttpPut]
@@ -46,24 +53,17 @@ namespace UsersRestApi.Controllers
         [HttpDelete("{userId}")]
         public IActionResult Delete(int userId)
         {
-            UsersRepository repo = new UsersRepository();
             EmployeeToClinicRepository empToClinicRepo = new EmployeeToClinicRepository();
 
             EmployeeToClinic emptToClinicRecord = empToClinicRepo.GetAll().Find(emp => emp.UserId == userId);
-            User user = repo.GetAll().Find(u => u.Id == userId);
 
-            if(emptToClinicRecord != null)
+            if (emptToClinicRecord != null)
             {
                 empToClinicRepo.Delete(emptToClinicRecord);
+                return Ok();
             }
 
-            if (user != null)
-            {
-                repo.Delete(user);
-                return Ok(user);
-            }
-
-            return NotFound(user);
+            return NotFound(emptToClinicRecord);
         }
     }
 }

@@ -5,6 +5,11 @@ using UsersRestApi.Repositories;
 using UsersRestApi.Entities;
 using System.Collections.Generic;
 
+public class AssignEmployeeToClinicModel
+{
+    public int userId { get; set; }
+    public int clinicId { get; set; }
+}
 
 namespace UsersRestApi.Controllers
 {
@@ -24,31 +29,50 @@ namespace UsersRestApi.Controllers
             return Ok(new { clinicId = clinicDto.Id });
         }
 
-        [HttpGet("{clinicId}")]
-        public IActionResult Get(int clinicId)
+        [HttpGet("{userId}")]
+        public IActionResult Get(int userId)
         {
 
-            ClinicsRepository repo = new ClinicsRepository();
-            Clinic clinic = repo.GetAll().Find(c => c.Id == clinicId);
+            UsersRepository userRepo = new UsersRepository();
+            User user = userRepo.GetAll().Find(u => u.Id == userId);
 
             EmployeeToClinicRepository empToClinicRepo = new EmployeeToClinicRepository();
-            List<EmployeeToClinic> employeeToClinic = empToClinicRepo.GetAll().FindAll(emp => emp.ClinicId == clinic.Id);
+            ClinicsRepository clinicsRepo = new ClinicsRepository();
 
-            return Ok(new { clinic, employees = employeeToClinic });
+            List<Clinic> clinics = [];
+
+            if (user.Role == "Owner")
+            {
+                clinics = clinicsRepo.GetAll().FindAll(c => c.OwnerId == userId);
+            }
+
+            if (user.Role != "Owner")
+            {
+                List<EmployeeToClinic> employeeToClinics = empToClinicRepo.GetAll().FindAll(emp => emp.UserId == userId);
+
+                foreach (var item in employeeToClinics)
+                {
+                    Clinic clinic = clinicsRepo.GetAll().Find(clinic => clinic.Id == item.ClinicId);
+                    clinics.Add(clinic);
+                }
+            }
+
+
+
+            return Ok(new { clinics });
         }
 
-        // Create employee and assign it to a clinic
+
+        // Assign employee to a clinic
         [HttpPost("{clinicId}")]
-        public IActionResult AddEmployeeToClinic([FromBody] User userDto, int clinicId)
+        public IActionResult AddEmployeeToClinic([FromBody] AssignEmployeeToClinicModel employeeInfo)
         {
 
-            UsersRepository usersRepo = new UsersRepository();
             EmployeeToClinicRepository employeeToClinicRepo = new EmployeeToClinicRepository();
-            int userId = usersRepo.Add(userDto);
 
-            employeeToClinicRepo.Add(new EmployeeToClinic { UserId = userId, ClinicId = clinicId });
+            employeeToClinicRepo.Add(new EmployeeToClinic { UserId = employeeInfo.userId, ClinicId = employeeInfo.clinicId });
 
-            return Ok();
+            return Created();
         }
     }
 }

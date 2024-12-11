@@ -47,7 +47,6 @@ namespace UsersRestApi.Controllers
             if (loggedUser.Role != "Owner")
             {
                 EmployeeToClinicRepository empToClinic = new EmployeeToClinicRepository();
-                Console.WriteLine(loggedUser.Id);
                 clinicId = empToClinic.GetAll().Find(employeeToClinic => employeeToClinic.UserId == loggedUser.Id).ClinicId;
             }
 
@@ -70,7 +69,7 @@ namespace UsersRestApi.Controllers
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
             string jwt = tokenHandler.WriteToken(token);
 
-            return Ok(new { success = true, token = jwt, clinic = clinicId });
+            return Ok(new { success = true, token = jwt, userId = loggedUser.Id });
         }
 
         [HttpPost]
