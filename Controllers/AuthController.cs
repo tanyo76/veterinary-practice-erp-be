@@ -27,7 +27,6 @@ namespace UsersRestApi.Controllers
         {
 
             UsersRepository repo = new UsersRepository();
-            ClinicsRepository clinicsRepo = new ClinicsRepository();
 
             User loggedUser = repo.GetAll().Find(u => u.Email == model.email &&
                                                               u.Password == model.password);
@@ -35,19 +34,6 @@ namespace UsersRestApi.Controllers
             if (loggedUser == null)
             {
                 return BadRequest(new { message = "Invalid credentials" });
-            }
-
-            int clinicId = 0;
-
-            if (loggedUser.Role == "Owner")
-            {
-                clinicId = clinicsRepo.GetAll().Find(c => c.OwnerId == loggedUser.Id).Id;
-            }
-
-            if (loggedUser.Role != "Owner")
-            {
-                EmployeeToClinicRepository empToClinic = new EmployeeToClinicRepository();
-                clinicId = empToClinic.GetAll().Find(employeeToClinic => employeeToClinic.UserId == loggedUser.Id).ClinicId;
             }
 
             var claims = new[]

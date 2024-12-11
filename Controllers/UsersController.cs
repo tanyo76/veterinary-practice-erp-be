@@ -15,7 +15,7 @@ namespace UsersRestApi.Controllers
     public class UsersController : ControllerBase
     {
         [HttpGet]
-        public IActionResult Get(int id)
+        public IActionResult GetEmployees(int id)
         {
             UsersRepository repo = new UsersRepository();
             List<User> items = repo.GetAll().FindAll(u => u.Role != "Owner");
