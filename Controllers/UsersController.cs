@@ -43,19 +43,18 @@ namespace UsersRestApi.Controllers
             return Created(model.Id.ToString(), model);
         }
 
-        [HttpDelete("{test}")]
-        public IActionResult Delete(int test)
+        [HttpDelete("{userId}")]
+        public IActionResult Delete(int userId)
         {
             UsersRepository repo = new UsersRepository();
+            EmployeeToClinicRepository empToClinicRepo = new EmployeeToClinicRepository();
 
-            User user = null;
-            foreach (User item in repo.GetAll())
+            EmployeeToClinic emptToClinicRecord = empToClinicRepo.GetAll().Find(emp => emp.UserId == userId);
+            User user = repo.GetAll().Find(u => u.Id == userId);
+
+            if(emptToClinicRecord != null)
             {
-                if (test == item.Id)
-                {
-                    user = item;
-                    break;
-                }
+                empToClinicRepo.Delete(emptToClinicRecord);
             }
 
             if (user != null)
