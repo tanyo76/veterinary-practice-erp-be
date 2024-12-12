@@ -15,7 +15,7 @@ namespace UsersRestApi.Controllers
     public class UsersController : ControllerBase
     {
         [HttpGet]
-        public IActionResult GetEmployees(int id)
+        public IActionResult GetEmployees()
         {
             UsersRepository repo = new UsersRepository();
             List<User> items = repo.GetAll().FindAll(u => u.Role != "Owner");
@@ -27,6 +27,14 @@ namespace UsersRestApi.Controllers
         public IActionResult Post([FromBody] User userDto)
         {
             UsersRepository repo = new UsersRepository();
+
+            User user = repo.GetAll().Find(u => u.Email == userDto.Email);
+
+            if (user != null)
+            {
+                return Conflict(new { message = "User with this email already exists" });
+            }
+
             int userId = repo.Add(userDto);
 
             return Ok(new { userId });

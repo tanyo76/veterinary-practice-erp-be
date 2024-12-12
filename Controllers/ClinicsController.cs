@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using UsersRestApi.Repositories;
 using UsersRestApi.Entities;
 using System.Collections.Generic;
+using System;
 
 public class AssignEmployeeToClinicModel
 {
@@ -69,6 +70,13 @@ namespace UsersRestApi.Controllers
         {
 
             EmployeeToClinicRepository employeeToClinicRepo = new EmployeeToClinicRepository();
+
+            EmployeeToClinic empToClinic = employeeToClinicRepo.GetAll().Find(emp => emp.ClinicId == employeeInfo.clinicId && emp.UserId == employeeInfo.userId);
+
+            if (empToClinic != null)
+            {
+                return Conflict(new { message = "This user is already part of the clinic" });
+            }
 
             employeeToClinicRepo.Add(new EmployeeToClinic { UserId = employeeInfo.userId, ClinicId = employeeInfo.clinicId });
 

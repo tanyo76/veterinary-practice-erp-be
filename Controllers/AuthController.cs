@@ -64,6 +64,13 @@ namespace UsersRestApi.Controllers
 
             UsersRepository repo = new UsersRepository();
 
+            User user = repo.GetAll().Find(u => u.Email == userDto.Email);
+
+            if (user != null)
+            {
+                return Conflict(new { message = "User with this email already exists" });
+            }
+
             int userId = repo.Add(userDto);
 
             var claims = new[]
