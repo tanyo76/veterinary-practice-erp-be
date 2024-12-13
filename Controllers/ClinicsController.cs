@@ -12,6 +12,13 @@ public class AssignEmployeeToClinicModel
     public int clinicId { get; set; }
 }
 
+public class EditClinicModel
+{
+    public int clinicId { get; set; }
+    public string name { get; set; }
+    public string address { get; set; }
+}
+
 namespace UsersRestApi.Controllers
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -20,12 +27,33 @@ namespace UsersRestApi.Controllers
     public class ClinicsController : ControllerBase
     {
 
+        [HttpPut]
+        public IActionResult EditField([FromBody]EditClinicModel editClinicModel)
+        {
+
+            ClinicsRepository repo = new ClinicsRepository();
+
+            Clinic clinic = repo.GetAll().Find(c => c.Id == editClinicModel.clinicId);
+
+            if (clinic == null)
+            {
+                NotFound(new { message = "Clinic not found " });
+            }
+
+            clinic.Address = editClinicModel.address;
+            clinic.Name = editClinicModel.name;
+
+            repo.Update(clinic);
+
+            return Ok(new { clinic });
+        }
+
         [HttpGet]
         public IActionResult GetClinicById([FromQuery(Name = "clinicId")] int clinicId)
         {
 
             ClinicsRepository repo = new ClinicsRepository();
-            
+
             Clinic clinic = repo.GetAll().Find(c => c.Id == clinicId);
 
             return Ok(new { clinic });

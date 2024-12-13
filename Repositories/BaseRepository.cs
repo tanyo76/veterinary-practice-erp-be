@@ -59,5 +59,12 @@ namespace UsersRestApi.Repositories
             return item.Id;
         }
 
+        public T Update(T item)
+        {
+            Context.SaveChanges();
+
+            return item;
+        }
+
     }
 }
