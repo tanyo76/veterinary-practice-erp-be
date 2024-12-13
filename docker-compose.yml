@@ -11,3 +11,4 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=Test@123
+      - MSSQL_DB=vetmasters

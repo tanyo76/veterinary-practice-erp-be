@@ -20,6 +20,17 @@ namespace UsersRestApi.Controllers
     public class ClinicsController : ControllerBase
     {
 
+        [HttpGet]
+        public IActionResult Post([FromQuery(Name = "clinicId")] int clinicId)
+        {
+
+            ClinicsRepository repo = new ClinicsRepository();
+            
+            Clinic clinic = repo.GetAll().Find(c => c.Id == clinicId);
+
+            return Ok(new { clinic });
+        }
+
         [HttpPost]
         public IActionResult Post([FromBody] Clinic clinicDto)
         {
