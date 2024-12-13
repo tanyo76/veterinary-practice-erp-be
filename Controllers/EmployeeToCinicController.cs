@@ -1,10 +1,18 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UsersRestApi.Entities;
 using UsersRestApi.Repositories;
 
+public class DeleteEmployeesDto
+{
+    public int[] userIds { get; set; }
+    public int clinicId { get; set; }
+}
 
 namespace UsersRestApi.Controllers
 {
@@ -25,18 +33,21 @@ namespace UsersRestApi.Controllers
             return Ok(new { employees = empsToClinic });
         }
 
-        [HttpDelete("{userId}/{clinicId}")]
-        public IActionResult Delete(int clinicId, int userId)
-        {
+        [HttpPost]
 
+        public IActionResult Delete([FromBody] DeleteEmployeesDto dto)
+        {
             EmployeeToClinicRepository empRepo = new EmployeeToClinicRepository();
 
-            EmployeeToClinic empToClinicRecord = empRepo.GetAll()
-            .Find(emp => emp.ClinicId == clinicId && emp.UserId == userId);
 
-            empRepo.Delete(empToClinicRecord);
+            EmployeeToClinic[] empToClinicRecords = empRepo.GetAll()
+            .FindAll(emp => (emp.ClinicId == dto.clinicId) && dto.userIds.Contains(emp.Id))
+            .ToArray();
+
+            empRepo.DeleteMany(empToClinicRecords);
 
             return Ok();
         }
     }
 }
+

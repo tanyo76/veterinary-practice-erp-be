@@ -21,7 +21,7 @@ namespace UsersRestApi.Controllers
     {
 
         [HttpGet]
-        public IActionResult Post([FromQuery(Name = "clinicId")] int clinicId)
+        public IActionResult GetClinicById([FromQuery(Name = "clinicId")] int clinicId)
         {
 
             ClinicsRepository repo = new ClinicsRepository();

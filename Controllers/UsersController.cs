@@ -40,23 +40,6 @@ namespace UsersRestApi.Controllers
             return Ok(new { userId });
         }
 
-        [HttpPut]
-        public IActionResult Put([FromBody] User model)
-        {
-
-            UsersRepository repo = new UsersRepository();
-            int id = 1;
-            foreach (User item in repo.GetAll())
-            {
-                if (id <= item.Id)
-                    id = item.Id + 1;
-            }
-
-            model.Id = id;
-            repo.Add(model);
-
-            return Created(model.Id.ToString(), model);
-        }
 
         [HttpDelete("{userId}")]
         public IActionResult Delete(int userId)

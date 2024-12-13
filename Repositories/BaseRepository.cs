@@ -45,6 +45,12 @@ namespace UsersRestApi.Repositories
             Context.SaveChanges();
         }
 
+        public void DeleteMany(T[] items)
+        {
+            Items.RemoveRange(items);
+            Context.SaveChanges();
+        }
+
         public int Add(T item)
         {
             Items.Add(item);
@@ -52,6 +58,6 @@ namespace UsersRestApi.Repositories
 
             return item.Id;
         }
-        
+
     }
 }
